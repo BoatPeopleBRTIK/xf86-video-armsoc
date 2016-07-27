@@ -39,36 +39,70 @@
 
 #define ALIGN(val, align)	(((val) + (align) - 1) & ~((align) - 1))
 
-/* memory type definitions. */
-enum e_nx_drm_gem_mem_type {
-	/* Physically Continuous memory and used as default. */
-	NX_BO_CONTIG	= 0 << 0,
-	/* Physically Non-Continuous memory. */
-	NX_BO_NONCONTIG	= 1 << 0,
-	/* non-cachable mapping and used as default. */
-	NX_BO_NONCACHABLE	= 0 << 1,
-	/* cachable mapping. */
-	NX_BO_CACHABLE	= 1 << 1,
-	/* write-combine mapping. */
-	NX_BO_WC		= 1 << 2,
-	NX_BO_MASK		= NX_BO_NONCONTIG | NX_BO_CACHABLE |
-					NX_BO_WC
+/*
+ * nexell gem memory type
+ */
+enum nx_gem_type {
+	/*
+	 * DMA continuous memory
+	 * user   : non-cacheable
+	 * kernel : non-cacheable
+	 */
+	NEXELL_BO_DMA,
+
+	/*
+	 * DMA continuous memory, allocate from DMA,
+	 * user   : cacheable
+	 * kernel : non-cacheable
+	 */
+	NEXELL_BO_DMA_CACHEABLE,
+
+	/*
+	 * System continuous memory, allocate from system
+	 * user   : non-cacheable
+	 * kernel : non-cacheable
+	 */
+	NEXELL_BO_SYSTEM,
+
+	/*
+	 * System continuous memory, allocate from system
+	 * user   : cacheable
+	 * kernel : cacheable
+	 */
+	NEXELL_BO_SYSTEM_CACHEABLE,
+
+	/*
+	 * System non-continuous memory, allocate from system
+	 * user   : non-cacheable
+	 * kernel : non-cacheable
+	 */
+	NEXELL_BO_SYSTEM_NONCONTIG,
+
+	/*
+	 * System non-continuous memory, allocate from system
+	 * user   : cacheable
+	 * kernel : cacheable
+	 */
+	NEXELL_BO_SYSTEM_NONCONTIG_CACHEABLE,
+
+	NEXELL_BO_MAX,
 };
 
-struct drm_nexell_gem_create {
+struct nx_gem_create {
 	uint64_t size;
 	unsigned int flags;
 	unsigned int handle;
+	void *priv_data;
 };
 
 #define DRM_NX_GEM_CREATE		0x00
 #define DRM_IOCTL_NX_GEM_CREATE	DRM_IOWR(DRM_COMMAND_BASE + \
-			DRM_NX_GEM_CREATE, struct drm_nexell_gem_create)
+			DRM_NX_GEM_CREATE, struct nx_gem_create)
 /***************************************************************************/
 
 static int create_custom_gem(int fd, struct armsoc_create_gem *create_gem)
 {
-	struct drm_nexell_gem_create create_nexell;
+	struct nx_gem_create create_nexell;
 	int ret;
 	unsigned int pitch;
 
