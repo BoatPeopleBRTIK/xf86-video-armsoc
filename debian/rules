@@ -2,6 +2,7 @@
 
 DRMMODES = exynos pl111 nexell
 COMMON_CONFIGURE_FLAGS = $(shell dpkg-buildflags --export=configure)
+export DEB_CFLAGS_MAINT_APPEND  = -D_FILE_OFFSET_BITS=64
 
 %:
 	dh $@ --with autoreconf,quilt,xsf
